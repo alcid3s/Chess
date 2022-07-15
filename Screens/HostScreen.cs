@@ -1,12 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Raylib_cs;
+using static Raylib_cs.Raylib;
 
-namespace ChessV02.Screens
+public class HostScreen : Screen
 {
-    internal class HostScreen
+    public HostScreen()
     {
+
+    }
+
+    public override void Draw()
+    {
+        throw new NotImplementedException();
+    }
+
+    public override void Update()
+    {
+        throw new NotImplementedException();
+    }
+
+    public override void Unload()
+    {
+        throw new NotImplementedException();
     }
 }

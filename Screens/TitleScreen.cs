@@ -16,7 +16,7 @@ public class TitleScreen
         this.State = 0;
     }
 
-    public void Update()
+    public override void Update()
     {
         this.singlePlayer.Update(GetMousePosition());
         this.multiPlayer.Update(GetMousePosition());
@@ -30,13 +30,13 @@ public class TitleScreen
         }
     }
 
-    public void Draw()
+    public override void Draw()
     {
         this.singlePlayer.Draw();
         this.multiPlayer.Draw();
     }
 
-    public void Unload()
+    public override void Unload()
     {
         this.singlePlayer.Unload();
         this.multiPlayer.Unload();

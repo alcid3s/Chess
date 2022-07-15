@@ -2,7 +2,7 @@
 using System.Numerics;
 using static Raylib_cs.Raylib;
 
-public class ChooseSideScreen
+public class ChooseSideScreen : Screen
 {
     private Button white;
     private Button black;
@@ -21,7 +21,7 @@ public class ChooseSideScreen
         this.random= new(texture, 2, new Vector2(GetScreenWidth() / 4, y + texture.height));
     }
 
-    public void Update()
+    public override void Update()
     {
         this.white.Update(GetMousePosition());
         this.black.Update(GetMousePosition());
@@ -39,14 +39,14 @@ public class ChooseSideScreen
             this.State = 3;
         }
     }
-    public void Draw()
+    public override void Draw()
     {
         this.white.Draw();
         this.black.Draw();
         this.random.Draw();
     }
 
-    public void Unload()
+    public override void Unload()
     {
         this.white.Unload();
         this.black.Unload();

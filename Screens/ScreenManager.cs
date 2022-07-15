@@ -1,15 +1,16 @@
 ﻿using Raylib_cs;
 using static Raylib_cs.Raylib;
 
-public class ScreenManager
+public class ScreenManager : Screen
 {
     private TitleScreen titleScreen;
     private ChooseSideScreen chooseSideScreen;
     private MultiPlayerScreen multiPlayerScreen;
+    private HostScreen hostScreen;
 
 
     private int state;  // state -1 playing, state 0 Titlescreen, state 1 Choose side,
-                        // state 2 MultiPlayer, state 4 ClientScreen, state 5 hostScreen
+                        // state 2 MultiPlayer, state 3 hostScreen, state 4 clientscreen
 
     private bool playing;
     public bool CheckMate { get; set; }
@@ -21,9 +22,11 @@ public class ScreenManager
         this.titleScreen = new TitleScreen();
         this.chooseSideScreen = new ChooseSideScreen();
         this.multiPlayerScreen = new MultiPlayerScreen();
+        this.hostScreen = new HostScreen();
+
     }
 
-    public void Update()
+    public override void Update()
     {
         if (this.state == -1)
         {
@@ -73,10 +76,21 @@ public class ScreenManager
         else if (this.state == 2)
         {
             this.multiPlayerScreen.Update();
+            if(this.multiPlayerScreen.State == 1)
+            {
+                this.state = 3;
+            }else if(this.multiPlayerScreen.State == 2)
+            {
+                this.state = 4;
+            }
+        }
+        else if(this.state == 3)
+        {
+            // hostScreen
         }
     }
 
-    public void Draw()
+    public override void Draw()
     {
         if (this.state == -1)
         {
@@ -96,10 +110,11 @@ public class ScreenManager
         }
     }
 
-    public void Unload()
+    public override void Unload()
     {
         this.titleScreen.Unload();
         this.chooseSideScreen.Unload();
         this.multiPlayerScreen.Unload();
+        this.hostScreen.Unload();
     }
 }
