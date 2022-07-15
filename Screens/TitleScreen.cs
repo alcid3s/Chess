@@ -2,7 +2,7 @@
 using System.Numerics;
 using static Raylib_cs.Raylib;
 
-public class TitleScreen
+public class TitleScreen : Screen
 {
     private Button singlePlayer;
     private Button multiPlayer;

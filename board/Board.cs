@@ -14,11 +14,9 @@ public class Board
 
     private Piece? selectedPiece = null;
 
-    private bool userPlaysAs;
     private bool whiteHasTurn;
     public Board(bool side)
     {
-        this.userPlaysAs = side;
         char[] name = { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H' };
         if (side)
         {
@@ -34,20 +32,13 @@ public class Board
         }
         else
         {
-            int counter = 0;
-            int inverseY = 0;
-            for(int y = 8; y > 0; y--)
+            for(int y = 0; y < 8; y++)
             {
-                inverseY++;
-                int inverseX = 0;
-                for(int x = 8; x > 0; x--)
+                for(int x = 0; x < 8; x++)
                 {
-                    inverseX++;
-                    int i = (y * 8) - x;
+                    int i = x + (y * 8);
                     bool light = (x + y) % 2 == 0;
-                    tiles[counter] = new(light ? tile1 : tile2, GetScreenWidth() - (tile1.width * inverseX), GetScreenHeight() - (tile1.height * inverseY), light, counter);
-                    Console.WriteLine("Position " + counter + " has X: " + tiles[counter].x + " and Y: " + tiles[counter].y);
-                    counter++;
+                    tiles[i] = new(light ? tile1 : tile2, GetScreenWidth() - (tile1.width * (x + 1)), GetScreenHeight() - (tile1.height * (y + 1)), light, i);
                 }
             }
         }
@@ -254,6 +245,7 @@ public class Board
         }
     }
 
+    //rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w
     public void LoadPieces(string fen)
     {
         var pieceType = new Dictionary<char, Piece>()
@@ -305,6 +297,7 @@ public class Board
                 {
                     Piece piece = pieceType[c];
                     Tile tile = GetTile(x, y);
+                    Console.WriteLine("Placing " + piece.GetType() + " on position " + tile.GetPositionOnBoard());
                     tile.Assign(piece);
                     piece.setAssignedTile(tile);
                     x++;
@@ -395,10 +388,5 @@ public class Board
             }
         }
         return false;
-    }
-
-    public void RotateScreen()
-    {
-
     }
 }

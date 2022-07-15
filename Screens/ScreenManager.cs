@@ -69,7 +69,7 @@ public class ScreenManager : Screen
 
                 board = new(boo);
 
-                board.LoadPieces(Program.standard);
+                //board.LoadPieces(Program.standard);
                 this.state = -1;
             }
         }
