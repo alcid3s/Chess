@@ -13,11 +13,11 @@ public class Tile
     private Piece? pieceOnTile = null;
 
     public bool Even;
-    public Tile(Texture2D texture, int x, int y, bool even, int position)
+    public Tile(Texture2D texture, int x, int y, bool even)
     {
         this.texture = texture;
-        this.position = position;
         this.positionOnBoard = new(x / texture.width, y / texture.height);
+
         this.Even = even;
         this.x = x;
         this.y = y;
@@ -28,6 +28,7 @@ public class Tile
         DrawTexture(texture, x, y, WHITE);
         if (this.pieceOnTile != null)
         {
+            //Console.WriteLine("Drawing piece: " + this.pieceOnTile.GetType() + " on X: " + x + " and Y: " + y);
             DrawTexture(this.pieceOnTile.GetTexture(), x, y, WHITE);
         }
     }
@@ -55,7 +56,7 @@ public class Tile
 
     public int GetPositionOnBoard()
     {
-        return position;
+        return (int) (positionOnBoard.X + (positionOnBoard.Y * 8));
     }
 
     public bool OnClick(Vector2 mousePosition)

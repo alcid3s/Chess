@@ -26,7 +26,7 @@ public class Board
                 {
                     int i = x + (y * 8);
                     bool light = (x + y) % 2 == 0;
-                    tiles[i] = new(light ? tile1 : tile2, x * tile1.width, y * tile1.height, light, i);
+                    tiles[i] = new(light ? tile1 : tile2, x * tile1.width, y * tile1.height, light);
                 }
             }
         }
@@ -38,11 +38,11 @@ public class Board
                 {
                     int i = x + (y * 8);
                     bool light = (x + y) % 2 == 0;
-                    tiles[i] = new(light ? tile1 : tile2, GetScreenWidth() - (tile1.width * (x + 1)), GetScreenHeight() - (tile1.height * (y + 1)), light, i);
+                    tiles[i] = new(light ? tile1 : tile2, x * tile1.width, y * tile1.height, light);
                 }
-            }
+            }  
         }
-
+        tiles[36].Assign(new Knight(false));
     }
 
     public void Draw()

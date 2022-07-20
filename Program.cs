@@ -10,7 +10,7 @@ public class Program
     public const string standard = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w";
     public const string toStudy = "8/1k4q/1ppp1p/2n1p/2P1P/P2P3Q/7P/2B4K w";
     public const string casteling = "r3k2r/pppppppp/8/8/8/8/PPPPPPPP/R3K2R w";
-    public const string test = "5p/5r/5n/5b/5q/5k/8/P/ b";
+    public const string test = "5p/5n/5n/5b/5n/5k/2ppp/P/ b";
     public static void Main()
     {
         const int screenWidth = 768;

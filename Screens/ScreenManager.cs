@@ -8,22 +8,18 @@ public class ScreenManager : Screen
     private MultiPlayerScreen multiPlayerScreen;
     private HostScreen hostScreen;
 
-
     private int state;  // state -1 playing, state 0 Titlescreen, state 1 Choose side,
                         // state 2 MultiPlayer, state 3 hostScreen, state 4 clientscreen
 
-    private bool playing;
     public bool CheckMate { get; set; }
     public static Board? board;
     public ScreenManager()
     {
         this.state = 0;
-        this.playing = false;
         this.titleScreen = new TitleScreen();
         this.chooseSideScreen = new ChooseSideScreen();
         this.multiPlayerScreen = new MultiPlayerScreen();
         this.hostScreen = new HostScreen();
-
     }
 
     public override void Update()
@@ -69,7 +65,7 @@ public class ScreenManager : Screen
 
                 board = new(boo);
 
-                //board.LoadPieces(Program.standard);
+                board.LoadPieces(Program.standard);
                 this.state = -1;
             }
         }
