@@ -7,7 +7,7 @@ public abstract class Piece
     protected bool white;
     protected Tile? assignedTile = null;
 
-    protected bool hasMoved;
+    private bool hasMoved;
     public Piece(bool white)
     {
         this.white = white;
@@ -42,5 +42,10 @@ public abstract class Piece
     public void HasMoved()
     {
         this.hasMoved = true;
+    }
+
+    public bool GetHasMoved()
+    {
+        return this.hasMoved;
     }
 }

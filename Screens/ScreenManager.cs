@@ -47,7 +47,7 @@ public class ScreenManager : Screen
             {
                 // player chooses white
                 board = new(true);
-                board.LoadPieces(Program.standard);
+                board.LoadPieces(Program.scholarsMate);
                 this.state = -1;
             }
             else if (this.chooseSideScreen.State == 2)

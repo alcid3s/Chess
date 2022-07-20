@@ -3,6 +3,8 @@ using static Raylib_cs.Raylib;
 public class Pawn : Piece
 {
     private bool boardReversed;
+    private int[] startPositionNorth = { 8, 9, 10, 11, 12, 13, 14, 15 };
+    private int[] startPositionSouth = { 48, 49, 50, 51, 52, 53, 54, 55 };
     public Pawn(bool white, bool boardReversed) : base(white)
     {
         if (white)
@@ -62,15 +64,14 @@ public class Pawn : Piece
             Tile north = startTile.GetNorth(ScreenManager.board);
             legalMovesNorth.Add(north);
 
-            // Check north secondMove
-            if (!this.hasMoved && CheckNorthMovements(north))
+            // Check if the pawn is on the startPosition, if so it can move one more space north
+            if (startPositionSouth.Contains(this.assignedTile.GetPositionOnBoard()) && CheckNorthMovements(north))
             {
                 legalMovesNorth.Add(north.GetNorth(ScreenManager.board));
             }
         }
         return legalMovesNorth;
     }
-
     private List<Tile> LegalMovesSouth(Tile startTile, bool ownPawns)
     {
         List<Tile> legalMovesSouth = new();
@@ -92,7 +93,9 @@ public class Pawn : Piece
         {
             Tile south = startTile.GetSouth(ScreenManager.board);
             legalMovesSouth.Add(south);
-            if (!this.hasMoved && CheckSouthMovements(south))
+
+            // Check if the pawn is on the startPosition, if so it can move one more space south
+            if (startPositionNorth.Contains(this.assignedTile.GetPositionOnBoard()) && CheckSouthMovements(south))
             {
                 legalMovesSouth.Add(south.GetSouth(ScreenManager.board));
             }
@@ -111,7 +114,6 @@ public class Pawn : Piece
             return true;
         }
     }
-
     private bool CheckSouthMovements(Tile startTile)
     {
         Tile south = startTile.GetSouth(ScreenManager.board);
@@ -124,7 +126,6 @@ public class Pawn : Piece
             return true;
         }
     }
-
     private bool CheckNorthEast(Tile startTile, bool ownPawns)
     {
         if ((startTile.GetPositionOnBoard() + 1) % 8 != 0)
@@ -144,7 +145,6 @@ public class Pawn : Piece
         }
         return false;
     }
-
     private bool CheckNorthWest(Tile startTile, bool ownPawns)
     {
         if (startTile.GetPositionOnBoard() % 8 != 0)
@@ -164,7 +164,6 @@ public class Pawn : Piece
         }
         return false;
     }
-
     private bool CheckSouthEast(Tile startTile, bool ownPawns)
     {
         if ((startTile.GetPositionOnBoard() + 1) % 8 != 0)
@@ -184,7 +183,6 @@ public class Pawn : Piece
         }
         return false;
     }
-
     private bool CheckSouthWest(Tile startTile, bool ownPawns)
     {
         if (startTile.GetPositionOnBoard() % 8 != 0)
