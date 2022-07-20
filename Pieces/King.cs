@@ -3,7 +3,6 @@ using static Raylib_cs.Raylib;
 
 public class King : Piece
 {
-    // still shit, but it works fine :D
     private int[] boundsWest = { 0, 8, 16, 24, 32, 40, 48, 56 };
     private int[] boundsEast = { 7, 15, 23, 31, 39, 47, 55, 63 };
     public King(bool white) : base(white)
@@ -23,50 +22,50 @@ public class King : Piece
     public override List<Tile> CalculateLegalMoves(Tile startTile, bool ownPawns)
     {
         List<Tile> legalMoves = new();
-        Tile north = startTile.GetNorth(ScreenManager.board);
-        if (checkTile(north, true))
+        Tile? north = startTile.GetNorth(ScreenManager.board);
+        if (CheckTile(north, true, ownPawns))
         {
             legalMoves.Add(north);
         }
 
-        Tile northEast = startTile.GetNorthEast(ScreenManager.board);
-        if (checkTile(northEast, true))
+        Tile? northEast = startTile.GetNorthEast(ScreenManager.board);
+        if (CheckTile(northEast, true, ownPawns))
         {
             legalMoves.Add(northEast);
         }
 
-        Tile east = startTile.GetEast(ScreenManager.board);
-        if (checkTile(east, true))
+        Tile? east = startTile.GetEast(ScreenManager.board);
+        if (CheckTile(east, true, ownPawns))
         {
             legalMoves.Add(east);
         }
 
-        Tile southEast = startTile.GetSouthEast(ScreenManager.board);
-        if (checkTile(southEast, true))
+        Tile? southEast = startTile.GetSouthEast(ScreenManager.board);
+        if (CheckTile(southEast, true, ownPawns))
         {
             legalMoves.Add(southEast);
         }
 
-        Tile south = startTile.GetSouth(ScreenManager.board);
-        if (checkTile(south, false))
+        Tile? south = startTile.GetSouth(ScreenManager.board);
+        if (CheckTile(south, false, ownPawns))
         {
             legalMoves.Add(south);
         }
 
-        Tile southWest = startTile.GetSouthWest(ScreenManager.board);
-        if (checkTile(southWest, false))
+        Tile? southWest = startTile.GetSouthWest(ScreenManager.board);
+        if (CheckTile(southWest, false, ownPawns))
         {
             legalMoves.Add(southWest);
         }
 
-        Tile west = startTile.GetWest(ScreenManager.board);
-        if (checkTile(west, false))
+        Tile? west = startTile.GetWest(ScreenManager.board);
+        if (CheckTile(west, false, ownPawns))
         {
             legalMoves.Add(west);
         }
 
-        Tile northWest = startTile.GetNorthWest(ScreenManager.board);
-        if (checkTile(northWest, false))
+        Tile? northWest = startTile.GetNorthWest(ScreenManager.board);
+        if (CheckTile(northWest, false, ownPawns))
         {
             legalMoves.Add(northWest);
         }
@@ -104,24 +103,28 @@ public class King : Piece
         return legalMoves;
     }
 
-    private bool checkTile(Tile tile, bool checkWestBounds)
+    private bool CheckTile(Tile tile, bool checkWestBounds, bool ownPawns)
     {
         if (checkWestBounds)
         {
-            if (tile != null && !tile.ContainsPiece() && !boundsWest.Contains(tile.GetPositionOnBoard())
-                || tile != null && tile.ContainsPiece() && !tile.GetPieceOnTile().GetColor().Equals(this.GetColor())
-                && !boundsWest.Contains(tile.GetPositionOnBoard()))
+            if (tile != null && !boundsWest.Contains(tile.GetPositionOnBoard()))
             {
-                return true;
+                if (!tile.ContainsPiece() || ownPawns && tile.ContainsPiece() && tile.GetPieceOnTile().GetColor().Equals(this.GetColor())
+                    || tile.ContainsPiece() && !tile.GetPieceOnTile().GetColor().Equals(this.GetColor()))
+                {
+                    return true;
+                }
             }
         }
         else
         {
-            if (tile != null && !tile.ContainsPiece() && !boundsEast.Contains(tile.GetPositionOnBoard())
-                || tile != null && tile.ContainsPiece() && !tile.GetPieceOnTile().GetColor().Equals(this.GetColor())
-                && !boundsEast.Contains(tile.GetPositionOnBoard()))
+            if (tile != null && !boundsEast.Contains(tile.GetPositionOnBoard()))
             {
-                return true;
+                if (!tile.ContainsPiece() || ownPawns && tile.ContainsPiece() && tile.GetPieceOnTile().GetColor().Equals(this.GetColor())
+                    || tile.ContainsPiece() && !tile.GetPieceOnTile().GetColor().Equals(this.GetColor()))
+                {
+                    return true;
+                }
             }
         }
 

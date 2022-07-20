@@ -12,6 +12,11 @@ public class Board
     public static Texture2D tile4 = LoadTexture("../../../res/Tile4.png");
     public static Texture2D tile5 = LoadTexture("../../../res/Tile5.png");
 
+    private List<Tile> legalMovesForWhite = new();
+    private List<Tile> legalMovesForBlack = new();
+
+    private Tile whiteKingPosition;
+    private Tile blackKingPosition;
     private Piece? selectedPiece = null;
 
     // if player plays as white, boardReversed = false, otherwise boardReversed = true
@@ -125,26 +130,21 @@ public class Board
                     this.selectedPiece.GetAssignedTile().Detach();
                     this.selectedPiece.setAssignedTile(tile);
 
-                    // Looking for Check 
-                    this.selectedPiece.CalculateLegalMoves(this.selectedPiece.GetAssignedTile(), false).ForEach(tile =>
-                    {
-                        if (LookForCheck(tile))
-                        {
-                            Console.WriteLine("Check");
-
-                        }
-                    });
-
                     if (!this.selectedPiece.GetHasMoved())
                     {
                         this.selectedPiece.HasMoved();
                     }
-
                     this.whiteHasTurn = !this.whiteHasTurn;
                     this.selectedPiece = null;
-                }
 
-                
+                    this.legalMovesForWhite = UpdateLegalMovesForColor(true);
+                    this.legalMovesForBlack = UpdateLegalMovesForColor(false);
+
+                    this.legalMovesForWhite.ForEach(move =>
+                    {
+                        Console.WriteLine("White controls: " + move.GetPositionOnBoard());
+                    });
+                }
                 Console.WriteLine((this.whiteHasTurn ? "White" : "Black") + " turn");
             }
 
@@ -176,6 +176,40 @@ public class Board
                 }
             }
         }
+
+        // Checking if a check has been called
+        if (this.legalMovesForWhite.Contains(this.blackKingPosition))
+        {
+            this.blackKingPosition.SetTexture(tile5);
+        }
+        else if (this.legalMovesForBlack.Contains(this.whiteKingPosition))
+        {
+            this.whiteKingPosition.SetTexture(tile5);
+        }
+    }
+
+    private List<Tile> UpdateLegalMovesForColor(bool white)
+    {
+        List<Tile> legalMoves = new();
+        foreach (Tile tile in tiles)
+        {
+            if (tile.ContainsPiece() && tile.GetPieceOnTile().GetColor().Equals(white))
+            {
+                if (typeof(King).Equals(tile.GetPieceOnTile().GetType()))
+                {
+                    if (white)
+                    {
+                        this.whiteKingPosition = tile;
+                    }
+                    else
+                    {
+                        this.blackKingPosition = tile;
+                    }
+                }
+                legalMoves.AddRange(tile.GetPieceOnTile().CalculateLegalMoves(tile.GetPieceOnTile().GetAssignedTile(), true));
+            }
+        }
+        return legalMoves;
     }
 
     private void CastleKingSide(Tile tile)
