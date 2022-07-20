@@ -48,8 +48,9 @@ public class Board
             // If nothing is selected yet
             if (clicked && this.selectedPiece == null && tile.ContainsPiece())
             {
-                if(tile.ContainsPiece() && tile.GetPieceOnTile().GetColor().Equals(this.whiteHasTurn))
+                if (tile.ContainsPiece() && tile.GetPieceOnTile().GetColor().Equals(this.whiteHasTurn))
                 {
+                    Console.WriteLine("A");
                     this.selectedPiece = tile.GetPieceOnTile();
                     this.selectedPiece.setAssignedTile(tile);
                     this.selectedPiece.GetAssignedTile().Assign(this.selectedPiece);
@@ -63,93 +64,97 @@ public class Board
             }
 
             // if a piece is selected and the user tries to change the location of the piece to another tile.
-            else if (clicked && this.selectedPiece != null && this.selectedPiece.GetAssignedTile() != null)
+            else if (clicked && this.selectedPiece != null && this.selectedPiece.GetAssignedTile() != null
+                && !tile.ContainsPiece() || clicked && this.selectedPiece != null && this.selectedPiece.GetAssignedTile() != null
+                && tile.ContainsPiece() && !tile.GetPieceOnTile().GetColor().Equals(this.selectedPiece.GetColor()))
             {
-                if(!tile.ContainsPiece() || tile.ContainsPiece() && !tile.GetPieceOnTile().GetColor().Equals(this.selectedPiece.GetColor()))
+                Console.WriteLine("B");
+                List<Tile> legalMoves = this.selectedPiece.CalculateLegalMoves(this.selectedPiece.GetAssignedTile(), false);
+
+                // check if it is allowed to move piece to this tile
+                if (legalMoves.Contains(tile))
                 {
-                    List<Tile> legalMoves = this.selectedPiece.CalculateLegalMoves(this.selectedPiece.GetAssignedTile(), false);
-
-                    // check if it is allowed to move piece to this tile
-                    if (legalMoves.Contains(tile))
+                    if (legalMoves.Any())
                     {
-                        if (legalMoves.Any())
+                        legalMoves.ForEach(tile =>
                         {
-                            legalMoves.ForEach(tile =>
-                            {
-                                tile.SetTexture(tile.Even ? tile1 : tile2);
-                            });
-                        }
-
-                        // check for casteling
-                        if (typeof(King).Equals(this.selectedPiece.GetType()))
-                        {
-                            // if the king is a white king
-                            if (this.selectedPiece.GetColor().Equals(true))
-                            {
-                                // Check if king is in starting position
-                                if (this.selectedPiece.GetAssignedTile().GetPositionOnBoard() == 60)
-                                {
-                                    // check if user wants to castle kingside
-                                    if (tile.GetPositionOnBoard() == 62)
-                                    {
-                                        CastleKingSide(tile);
-                                    }
-
-                                    // Check if user wants to castle queenside
-                                    else if (tile.GetPositionOnBoard() == 58)
-                                    {
-                                        CastleQueenSide(tile);
-                                    }
-                                }
-                            }
-
-                            // if the king is a black king
-                            else
-                            {
-                                // Check if king is in starting position
-                                if (this.selectedPiece.GetAssignedTile().GetPositionOnBoard() == 4)
-                                {
-                                    if (tile.GetPositionOnBoard() == 6)
-                                    {
-                                        CastleKingSide(tile);
-                                    }
-                                    else if (tile.GetPositionOnBoard() == 2)
-                                    {
-                                        CastleQueenSide(tile);
-                                    }
-                                }
-                            }
-                        }
-
-                        tile.Assign(this.selectedPiece);
-                        this.selectedPiece.GetAssignedTile().Detach();
-                        this.selectedPiece.setAssignedTile(tile);
-
-                        // Looking for Check 
-                        this.selectedPiece.CalculateLegalMoves(this.selectedPiece.GetAssignedTile(), false).ForEach(tile =>
-                        {
-                            if (LookForCheck(tile))
-                            {
-                                Console.WriteLine("Check");
-
-                            }
+                            tile.SetTexture(tile.Even ? tile1 : tile2);
                         });
+                    }
 
-                        if (!this.selectedPiece.GetHasMoved())
+                    // check for casteling
+                    if (typeof(King).Equals(this.selectedPiece.GetType()))
+                    {
+                        // if the king is a white king
+                        if (this.selectedPiece.GetColor().Equals(true))
                         {
-                            this.selectedPiece.HasMoved();
+                            // Check if king is in starting position
+                            if (this.selectedPiece.GetAssignedTile().GetPositionOnBoard() == 60)
+                            {
+                                // check if user wants to castle kingside
+                                if (tile.GetPositionOnBoard() == 62)
+                                {
+                                    CastleKingSide(tile);
+                                }
+
+                                // Check if user wants to castle queenside
+                                else if (tile.GetPositionOnBoard() == 58)
+                                {
+                                    CastleQueenSide(tile);
+                                }
+                            }
                         }
 
-                        this.selectedPiece = null;
+                        // if the king is a black king
+                        else
+                        {
+                            // Check if king is in starting position
+                            if (this.selectedPiece.GetAssignedTile().GetPositionOnBoard() == 4)
+                            {
+                                if (tile.GetPositionOnBoard() == 6)
+                                {
+                                    CastleKingSide(tile);
+                                }
+                                else if (tile.GetPositionOnBoard() == 2)
+                                {
+                                    CastleQueenSide(tile);
+                                }
+                            }
+                        }
+                    }
+
+                    tile.Assign(this.selectedPiece);
+                    this.selectedPiece.GetAssignedTile().Detach();
+                    this.selectedPiece.setAssignedTile(tile);
+
+                    // Looking for Check 
+                    this.selectedPiece.CalculateLegalMoves(this.selectedPiece.GetAssignedTile(), false).ForEach(tile =>
+                    {
+                        if (LookForCheck(tile))
+                        {
+                            Console.WriteLine("Check");
+
+                        }
+                    });
+
+                    if (!this.selectedPiece.GetHasMoved())
+                    {
+                        this.selectedPiece.HasMoved();
                     }
 
                     this.whiteHasTurn = !this.whiteHasTurn;
-                    Console.WriteLine((this.whiteHasTurn ? "White" : "Black") + " turn");
+                    this.selectedPiece = null;
                 }
+
                 
+                Console.WriteLine((this.whiteHasTurn ? "White" : "Black") + " turn");
             }
-            else if (clicked && this.selectedPiece != null && this.selectedPiece.GetAssignedTile() != null && tile.ContainsPiece())
+
+            // If the player selected a piece but decides to select a different piece
+            else if (clicked && this.selectedPiece != null && this.selectedPiece.GetAssignedTile() != null && tile.ContainsPiece()
+                && tile.GetPieceOnTile().GetColor().Equals(this.whiteHasTurn))
             {
+                Console.WriteLine("Select differect piece");
                 List<Tile> legalMoves = this.selectedPiece.CalculateLegalMoves(this.selectedPiece.GetAssignedTile(), false);
 
                 if (legalMoves.Any())
@@ -248,7 +253,7 @@ public class Board
         }
 
         foreach (char c in fen)
-        { 
+        {
             if (whoMovesFirst && c == 'w')
             {
                 Console.WriteLine("White starts");
