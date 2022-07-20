@@ -11,6 +11,9 @@ public class Board
     public static Texture2D tile3 = LoadTexture("../../../res/Tile3.png");
     public static Texture2D tile4 = LoadTexture("../../../res/Tile4.png");
     public static Texture2D tile5 = LoadTexture("../../../res/Tile5.png");
+    public static Texture2D tile6 = LoadTexture("../../../res/Tile6.png");
+
+    public static bool mate = false;
 
     private List<Tile> legalMovesForWhite = new();
     private List<Tile> legalMovesForBlack = new();
@@ -47,6 +50,10 @@ public class Board
 
     public void OnClick(Vector2 mousePosition)
     {
+        if (mate)
+        {
+            return;
+        }
         foreach (Tile tile in tiles)
         {
             bool clicked = tile.OnClick(mousePosition);
@@ -139,11 +146,6 @@ public class Board
 
                     this.legalMovesForWhite = UpdateLegalMovesForColor(true);
                     this.legalMovesForBlack = UpdateLegalMovesForColor(false);
-
-                    this.legalMovesForWhite.ForEach(move =>
-                    {
-                        Console.WriteLine("White controls: " + move.GetPositionOnBoard());
-                    });
                 }
                 Console.WriteLine((this.whiteHasTurn ? "White" : "Black") + " turn");
             }
@@ -181,10 +183,40 @@ public class Board
         if (this.legalMovesForWhite.Contains(this.blackKingPosition))
         {
             this.blackKingPosition.SetTexture(tile5);
+            List<Tile> possibleKingMoves = this.blackKingPosition.GetPieceOnTile().CalculateLegalMoves(this.blackKingPosition, false);
+
+            possibleKingMoves.RemoveAll(this.legalMovesForWhite.Contains);
+
+            if (possibleKingMoves.Any())
+            {
+                possibleKingMoves.ForEach(p =>
+                {
+                    p.SetTexture(tile6);
+                });
+            }
+            else
+            {
+                mate = true;
+            }
         }
         else if (this.legalMovesForBlack.Contains(this.whiteKingPosition))
         {
             this.whiteKingPosition.SetTexture(tile5);
+            List<Tile> possibleKingMoves = this.whiteKingPosition.GetPieceOnTile().CalculateLegalMoves(this.whiteKingPosition, false);
+
+            possibleKingMoves.Except(this.legalMovesForBlack);
+
+            if (possibleKingMoves.Any())
+            {
+                possibleKingMoves.ForEach(p =>
+                {
+                    p.SetTexture(tile6);
+                });
+            }
+            else
+            {
+                mate = true;
+            }
         }
     }
 
@@ -195,6 +227,7 @@ public class Board
         {
             if (tile.ContainsPiece() && tile.GetPieceOnTile().GetColor().Equals(white))
             {
+                List<Tile> moves = tile.GetPieceOnTile().CalculateLegalMoves(tile, true);
                 if (typeof(King).Equals(tile.GetPieceOnTile().GetType()))
                 {
                     if (white)
@@ -206,7 +239,7 @@ public class Board
                         this.blackKingPosition = tile;
                     }
                 }
-                legalMoves.AddRange(tile.GetPieceOnTile().CalculateLegalMoves(tile.GetPieceOnTile().GetAssignedTile(), true));
+                legalMoves.AddRange(moves);
             }
         }
         return legalMoves;

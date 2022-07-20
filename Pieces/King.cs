@@ -21,6 +21,10 @@ public class King : Piece
 
     public override List<Tile> CalculateLegalMoves(Tile startTile, bool ownPawns)
     {
+        if (!Board.mate)
+        {
+
+        }
         List<Tile> legalMoves = new();
         Tile? north = startTile.GetNorth(ScreenManager.board);
         if (CheckTile(north, true, ownPawns))
