@@ -14,35 +14,22 @@ public class Board
 
     private Piece? selectedPiece = null;
 
+    // if player plays as white, boardReversed = false, otherwise boardReversed = true
+    private bool boardReversed; 
     private bool whiteHasTurn;
     public Board(bool side)
     {
         char[] name = { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H' };
-        if (side)
+        for (int y = 0; y < 8; y++)
         {
-            for (int y = 0; y < 8; y++)
+            for (int x = 0; x < 8; x++)
             {
-                for (int x = 0; x < 8; x++)
-                {
-                    int i = x + (y * 8);
-                    bool light = (x + y) % 2 == 0;
-                    tiles[i] = new(light ? tile1 : tile2, x * tile1.width, y * tile1.height, light);
-                }
+                int i = x + (y * 8);
+                bool light = (x + y) % 2 == 0;
+                tiles[i] = new(light ? tile1 : tile2, x * tile1.width, y * tile1.height, light);
             }
         }
-        else
-        {
-            for(int y = 0; y < 8; y++)
-            {
-                for(int x = 0; x < 8; x++)
-                {
-                    int i = x + (y * 8);
-                    bool light = (x + y) % 2 == 0;
-                    tiles[i] = new(light ? tile1 : tile2, x * tile1.width, y * tile1.height, light);
-                }
-            }  
-        }
-        tiles[36].Assign(new Knight(false));
+        this.boardReversed = !side;
     }
 
     public void Draw()
@@ -250,8 +237,8 @@ public class Board
     {
         var pieceType = new Dictionary<char, Piece>()
         {
-            ['p'] = new Pawn(false),
-            ['P'] = new Pawn(true),
+            ['p'] = new Pawn(false, this.boardReversed),
+            ['P'] = new Pawn(true, this.boardReversed),
             ['r'] = new Rook(false),
             ['R'] = new Rook(true),
             ['n'] = new Knight(false),
@@ -266,6 +253,12 @@ public class Board
 
         int x = 0, y = 0;
         bool whoMovesFirst = false;
+        if (this.boardReversed)
+        {
+            fen = Reverse(fen);
+        }
+
+        Console.WriteLine("FEN string: " + fen);
         foreach (char c in fen)
         {
             if (whoMovesFirst && c == 'w')
@@ -388,5 +381,35 @@ public class Board
             }
         }
         return false;
+    }
+
+    private string Reverse(string fen)
+    {
+        List<char> charArrayFen = new();
+        List<char> temp = new();
+
+        charArrayFen.AddRange(fen);
+        List<char> toRemove = new();
+        bool flag = false;
+
+        // Make sure that the start is saved in the temp char[].
+        charArrayFen.ForEach(c =>
+        {
+            if (c == ' ')
+            {
+                flag = true;
+            }
+
+            if (flag)
+            {
+                temp.Add(c);
+                toRemove.Add(c);
+            }
+        });
+
+        charArrayFen.RemoveAll(toRemove.Contains);
+
+        charArrayFen.Reverse();
+        return new string(charArrayFen.ToArray());
     }
 }

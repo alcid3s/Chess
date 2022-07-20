@@ -7,12 +7,14 @@ public abstract class Piece
     protected bool white;
     protected Tile? assignedTile = null;
 
-    private bool hasMoved;
+    protected bool hasMoved;
     public Piece(bool white)
     {
         this.white = white;
         this.hasMoved = false;
         this.image = LoadImage("../../../res/pieces.png");
+
+        
     }
 
     public abstract List<Tile> CalculateLegalMoves(Tile startTile, bool ownPawns);
