@@ -19,6 +19,7 @@ public class Board
 
     public static List<Tile> lineOfAttack = new();
 
+    private Player player;
     private Tile whiteKingPosition;
     private Tile blackKingPosition;
     private Piece? selectedPiece = null;
@@ -59,6 +60,7 @@ public class Board
         foreach (Tile tile in tiles)
         {
             bool clicked = tile.OnClick(mousePosition);
+
             // If nothing is selected yet
             if (clicked && this.selectedPiece == null && tile.ContainsPiece())
             {
@@ -150,6 +152,12 @@ public class Board
                     legalMovesForBlack = UpdateLegalMovesForColor(false);
                 }
                 Console.WriteLine((this.whiteHasTurn ? "White" : "Black") + " turn");
+
+                if (player.White == this.whiteHasTurn)
+                {
+                    Console.WriteLine("generating move for: " + (player.White ? "White" : "Black"));
+                    player.GenerateMove();
+                }
             }
 
             // If the player selected a piece but decides to select a different piece
@@ -180,6 +188,8 @@ public class Board
                 }
             }
         }
+
+        
 
         // Checking if a check has been called for the black king
         if (legalMovesForWhite.Contains(this.blackKingPosition))
@@ -359,6 +369,8 @@ public class Board
                 }
             }
         }
+
+        this.player = new(this.boardReversed);
 
         legalMovesForWhite = UpdateLegalMovesForColor(true);
         legalMovesForBlack = UpdateLegalMovesForColor(false);

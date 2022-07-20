@@ -8,14 +8,15 @@ public class ScreenManager : Screen
     private MultiPlayerScreen multiPlayerScreen;
     private HostScreen hostScreen;
 
-    private int state;  // state -1 playing, state 0 Titlescreen, state 1 Choose side,
-                        // state 2 MultiPlayer, state 3 hostScreen, state 4 clientscreen
+    public int State;  // state -1 playing, state 0 Titlescreen, state 1 Choose side,
+                       // state 2 MultiPlayer, state 3 hostScreen, state 4 clientscreen
 
+    public static bool SinglePlayer;
     public bool CheckMate { get; set; }
     public static Board? board;
     public ScreenManager()
     {
-        this.state = 0;
+        this.State = 0;
         this.titleScreen = new TitleScreen();
         this.chooseSideScreen = new ChooseSideScreen();
         this.multiPlayerScreen = new MultiPlayerScreen();
@@ -24,23 +25,24 @@ public class ScreenManager : Screen
 
     public override void Update()
     {
-        if (this.state == -1)
+        if (this.State == -1)
         {
             board.Update();
         }
-        else if (this.state == 0)
+        else if (this.State == 0)
         {
             this.titleScreen.Update();
             if (this.titleScreen.State == 1)
             {
-                this.state = 1;
+                this.State = 1;
             }
             else if (this.titleScreen.State == 2)
             {
-                this.state = 2;
+                this.State = 2;
+                SinglePlayer = true;
             }
         }
-        else if (this.state == 1)
+        else if (this.State == 1)
         {
             this.chooseSideScreen.Update();
             if (this.chooseSideScreen.State == 1)
@@ -48,14 +50,14 @@ public class ScreenManager : Screen
                 // player chooses white
                 board = new(true);
                 board.LoadPieces(Program.standard);
-                this.state = -1;
+                this.State = -1;
             }
             else if (this.chooseSideScreen.State == 2)
             {
                 // player chooses black
                 board = new(false);
                 board.LoadPieces(Program.standard);
-                this.state = -1;
+                this.State = -1;
             }
             else if (this.chooseSideScreen.State == 3)
             {
@@ -66,21 +68,21 @@ public class ScreenManager : Screen
                 board = new(boo);
 
                 board.LoadPieces(Program.standard);
-                this.state = -1;
+                this.State = -1;
             }
         }
-        else if (this.state == 2)
+        else if (this.State == 2)
         {
             this.multiPlayerScreen.Update();
             if(this.multiPlayerScreen.State == 1)
             {
-                this.state = 3;
+                this.State = 3;
             }else if(this.multiPlayerScreen.State == 2)
             {
-                this.state = 4;
+                this.State = 4;
             }
         }
-        else if(this.state == 3)
+        else if(this.State == 3)
         {
             // hostScreen
         }
@@ -88,19 +90,19 @@ public class ScreenManager : Screen
 
     public override void Draw()
     {
-        if (this.state == -1)
+        if (this.State == -1)
         {
             board.Draw();
         }
-        else if (this.state == 0)
+        else if (this.State == 0)
         {
             this.titleScreen.Draw();
         }
-        else if (this.state == 1)
+        else if (this.State == 1)
         {
             this.chooseSideScreen.Draw();
         }
-        else if(this.state == 2)
+        else if(this.State == 2)
         {
             this.multiPlayerScreen.Draw();
         }
