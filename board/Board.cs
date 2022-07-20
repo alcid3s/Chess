@@ -50,7 +50,6 @@ public class Board
             {
                 if (tile.ContainsPiece() && tile.GetPieceOnTile().GetColor().Equals(this.whiteHasTurn))
                 {
-                    Console.WriteLine("A");
                     this.selectedPiece = tile.GetPieceOnTile();
                     this.selectedPiece.setAssignedTile(tile);
                     this.selectedPiece.GetAssignedTile().Assign(this.selectedPiece);
@@ -68,7 +67,6 @@ public class Board
                 && !tile.ContainsPiece() || clicked && this.selectedPiece != null && this.selectedPiece.GetAssignedTile() != null
                 && tile.ContainsPiece() && !tile.GetPieceOnTile().GetColor().Equals(this.selectedPiece.GetColor()))
             {
-                Console.WriteLine("B");
                 List<Tile> legalMoves = this.selectedPiece.CalculateLegalMoves(this.selectedPiece.GetAssignedTile(), false);
 
                 // check if it is allowed to move piece to this tile
@@ -154,7 +152,6 @@ public class Board
             else if (clicked && this.selectedPiece != null && this.selectedPiece.GetAssignedTile() != null && tile.ContainsPiece()
                 && tile.GetPieceOnTile().GetColor().Equals(this.whiteHasTurn))
             {
-                Console.WriteLine("Select differect piece");
                 List<Tile> legalMoves = this.selectedPiece.CalculateLegalMoves(this.selectedPiece.GetAssignedTile(), false);
 
                 if (legalMoves.Any())
