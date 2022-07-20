@@ -12,11 +12,12 @@ public class Board
     public static Texture2D tile4 = LoadTexture("../../../res/Tile4.png");
     public static Texture2D tile5 = LoadTexture("../../../res/Tile5.png");
     public static Texture2D tile6 = LoadTexture("../../../res/Tile6.png");
+    public static bool Check = false;
 
-    public static bool mate = false;
+    public static List<Tile> legalMovesForWhite = new();
+    public static List<Tile> legalMovesForBlack = new();
 
-    private List<Tile> legalMovesForWhite = new();
-    private List<Tile> legalMovesForBlack = new();
+    public static List<Tile> lineOfAttack = new();
 
     private Tile whiteKingPosition;
     private Tile blackKingPosition;
@@ -25,6 +26,7 @@ public class Board
     // if player plays as white, boardReversed = false, otherwise boardReversed = true
     private bool boardReversed;
     private bool whiteHasTurn;
+    private bool mate = false;
     public Board(bool side)
     {
         char[] name = { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H' };
@@ -144,8 +146,8 @@ public class Board
                     this.whiteHasTurn = !this.whiteHasTurn;
                     this.selectedPiece = null;
 
-                    this.legalMovesForWhite = UpdateLegalMovesForColor(true);
-                    this.legalMovesForBlack = UpdateLegalMovesForColor(false);
+                    legalMovesForWhite = UpdateLegalMovesForColor(true);
+                    legalMovesForBlack = UpdateLegalMovesForColor(false);
                 }
                 Console.WriteLine((this.whiteHasTurn ? "White" : "Black") + " turn");
             }
@@ -179,44 +181,39 @@ public class Board
             }
         }
 
-        // Checking if a check has been called
-        if (this.legalMovesForWhite.Contains(this.blackKingPosition))
+        // Checking if a check has been called for the black king
+        if (legalMovesForWhite.Contains(this.blackKingPosition))
         {
+            Check = true;
             this.blackKingPosition.SetTexture(tile5);
             List<Tile> possibleKingMoves = this.blackKingPosition.GetPieceOnTile().CalculateLegalMoves(this.blackKingPosition, false);
 
-            possibleKingMoves.RemoveAll(this.legalMovesForWhite.Contains);
+            possibleKingMoves.RemoveAll(legalMovesForWhite.Contains);
 
-            if (possibleKingMoves.Any())
-            {
-                possibleKingMoves.ForEach(p =>
-                {
-                    p.SetTexture(tile6);
-                });
-            }
-            else
+            if (!possibleKingMoves.Any())
             {
                 mate = true;
             }
         }
-        else if (this.legalMovesForBlack.Contains(this.whiteKingPosition))
+
+        // Checking if a check has been called for the white king
+        else if (legalMovesForBlack.Contains(this.whiteKingPosition))
         {
+            Check = true;
             this.whiteKingPosition.SetTexture(tile5);
             List<Tile> possibleKingMoves = this.whiteKingPosition.GetPieceOnTile().CalculateLegalMoves(this.whiteKingPosition, false);
 
-            possibleKingMoves.Except(this.legalMovesForBlack);
+            possibleKingMoves.RemoveAll(legalMovesForBlack.Contains);
 
-            if (possibleKingMoves.Any())
-            {
-                possibleKingMoves.ForEach(p =>
-                {
-                    p.SetTexture(tile6);
-                });
-            }
-            else
+            if (!possibleKingMoves.Any())
             {
                 mate = true;
             }
+        }
+        else
+        {
+            this.blackKingPosition.SetTexture(this.blackKingPosition.Even ? tile1 : tile2);
+            this.whiteKingPosition.SetTexture(this.whiteKingPosition.Even ? tile1 : tile2);
         }
     }
 
@@ -238,6 +235,15 @@ public class Board
                     {
                         this.blackKingPosition = tile;
                     }
+                }
+
+                if (white && moves.Contains(this.blackKingPosition))
+                {
+                    //TODO: Get Line Of Attack
+                }
+                else if (!white && moves.Contains(this.whiteKingPosition))
+                {
+                    //TODO: Get Line Of Attack
                 }
                 legalMoves.AddRange(moves);
             }
@@ -353,6 +359,9 @@ public class Board
                 }
             }
         }
+
+        legalMovesForWhite = UpdateLegalMovesForColor(true);
+        legalMovesForBlack = UpdateLegalMovesForColor(false);
     }
 
     public void Update()
@@ -372,73 +381,6 @@ public class Board
     {
         return tiles;
     }
-
-    private bool LookForCheck(Tile tile)
-    {
-        if (this.selectedPiece != null && tile.ContainsPiece() && !tile.GetPieceOnTile().GetColor().Equals(this.selectedPiece.GetColor())
-            && typeof(King).Equals(tile.GetPieceOnTile().GetType()))
-        {
-            tile.SetTexture(tile5);
-            return true;
-        }
-        tile.SetTexture(tile.Even ? tile1 : tile2);
-        return false;
-    }
-
-    private bool LookForCheckMate(Tile tile)
-    {
-
-        if (LookForCheck(tile))
-        {
-            Console.WriteLine("check");
-            List<Tile> possibleKingMoves = tile.GetPieceOnTile().CalculateLegalMoves(tile, false);
-            bool colorOfKing = tile.GetPieceOnTile().GetColor();
-
-            HashSet<Tile> toRemove = new HashSet<Tile>();
-
-            // Check if all moves the king can do are covered by the opposite side
-            foreach (Tile t in tiles)
-            {
-                if (t.ContainsPiece() && t.GetPieceOnTile() != null)
-                {
-
-                    if (!t.GetPieceOnTile().GetColor().Equals(colorOfKing))
-                    {
-                        List<Tile> possiblePieceMoves = t.GetPieceOnTile().CalculateLegalMoves(t, true);
-
-                        if (possiblePieceMoves.Any() && possibleKingMoves.Any())
-                        {
-                            possibleKingMoves.ForEach(kingMove =>
-                            {
-                                if (possiblePieceMoves.Contains(kingMove))
-                                {
-                                    Console.WriteLine(t.GetPieceOnTile().GetType() + " covers " + kingMove.GetPositionOnBoard());
-                                    toRemove.Add(kingMove);
-                                }
-                            });
-                        }
-                    }
-                    else if (t.GetPieceOnTile().GetColor().Equals(colorOfKing))
-                    {
-                        Tile tileOfInterest = this.selectedPiece.GetAssignedTile();
-                        if (t.GetPieceOnTile().CalculateLegalMoves(t, false).Contains(tileOfInterest)
-                            && !typeof(King).Equals(t.GetPieceOnTile().GetType()))
-                        {
-                            return false;
-                        }
-                    }
-                }
-            }
-
-            possibleKingMoves.RemoveAll(toRemove.Contains);
-            if (!possibleKingMoves.Any())
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-
     private string Reverse(string fen)
     {
         List<char> charArrayFen = new();
