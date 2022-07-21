@@ -61,9 +61,15 @@ public class Board
         {
             bool clicked = tile.OnClick(mousePosition);
 
+            if (clicked)
+            {
+                Console.WriteLine("Clicked on: " + tile.GetPositionOnBoard());
+            }
+
             // If nothing is selected yet
             if (clicked && this.selectedPiece == null && tile.ContainsPiece())
             {
+                Console.WriteLine("A");
                 if (tile.ContainsPiece() && tile.GetPieceOnTile().GetColor().Equals(this.whiteHasTurn))
                 {
                     this.selectedPiece = tile.GetPieceOnTile();
@@ -83,6 +89,7 @@ public class Board
                 && !tile.ContainsPiece() || clicked && this.selectedPiece != null && this.selectedPiece.GetAssignedTile() != null
                 && tile.ContainsPiece() && !tile.GetPieceOnTile().GetColor().Equals(this.selectedPiece.GetColor()))
             {
+                Console.WriteLine("B");
                 List<Tile> legalMoves = this.selectedPiece.CalculateLegalMoves(this.selectedPiece.GetAssignedTile(), false);
 
                 // check if it is allowed to move piece to this tile
@@ -137,6 +144,7 @@ public class Board
                         }
                     }
 
+                    tile.Detach();
                     tile.Assign(this.selectedPiece);
                     this.selectedPiece.GetAssignedTile().Detach();
                     this.selectedPiece.setAssignedTile(tile);
@@ -153,7 +161,7 @@ public class Board
                 }
                 Console.WriteLine((this.whiteHasTurn ? "White" : "Black") + " turn");
 
-                if (player.White == this.whiteHasTurn)
+                if (player.White == this.whiteHasTurn && !mate)
                 {
                     Console.WriteLine("generating move for: " + (player.White ? "White" : "Black"));
                     player.GenerateMove();
@@ -367,10 +375,14 @@ public class Board
             }
         }
 
-        this.player = new(this.boardReversed);
-
         legalMovesForWhite = UpdateLegalMovesForColor(true);
         legalMovesForBlack = UpdateLegalMovesForColor(false);
+
+        this.player = new(this.boardReversed);
+        if (this.boardReversed && this.player.White.Equals(this.whiteHasTurn))
+        {
+            this.player.GenerateMove();
+        }
     }
     public void Update()
     {

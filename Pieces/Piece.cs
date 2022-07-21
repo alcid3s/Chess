@@ -13,8 +13,6 @@ public abstract class Piece
         this.white = white;
         this.hasMoved = false;
         this.image = LoadImage("../../../res/pieces.png");
-
-        
     }
 
     public abstract List<Tile> CalculateLegalMoves(Tile startTile, bool ownPawns);
