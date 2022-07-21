@@ -73,6 +73,7 @@ public class ScreenManager : Screen
         }
         else if (this.State == 2)
         {
+            SinglePlayer = false;
             this.multiPlayerScreen.Update();
             if(this.multiPlayerScreen.State == 1)
             {
