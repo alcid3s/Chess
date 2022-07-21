@@ -3,56 +3,46 @@
 public class Player
 {
     private static Random random = new Random();
-
-    private List<Piece> pieces = new();
     public bool White { get; }
     public Player(bool white)
     {
         Console.WriteLine("Enemy has color: " + (white ? "White" : "Black"));
         this.White = white;
-        foreach (Tile tile in ScreenManager.board.GetTiles())
-        {
-            if (tile.ContainsPiece() && tile.GetPieceOnTile().GetColor().Equals(white))
-            {
-                pieces.Add(tile.GetPieceOnTile()); ;
-            }
-        }
     }
 
     public void GenerateMove()
     {
-        int piece = random.Next(pieces.Count);
-        List<Tile> legalMoves = pieces.ElementAt(piece).CalculateLegalMoves(pieces.ElementAt(piece).GetAssignedTile(), false);
+        List<Piece> pieces = GetPieces();
 
-        while(legalMoves.Count == 0)
-        {
-            piece = random.Next(pieces.Count);
-            legalMoves = pieces.ElementAt(piece).CalculateLegalMoves(pieces.ElementAt(piece).GetAssignedTile(), false);
+        int selectPiece = random.Next(0, pieces.Count);
+        List<Tile> legalMoves = pieces.ElementAt(selectPiece).CalculateLegalMoves(pieces.ElementAt(selectPiece).GetAssignedTile(), false);
+
+        while (!legalMoves.Any() || legalMoves.Count == 0)
+        { 
+            selectPiece = random.Next(0, pieces.Count);
+            legalMoves = pieces.ElementAt(selectPiece).CalculateLegalMoves(pieces.ElementAt(selectPiece).GetAssignedTile(), false);
         }
 
-        Console.WriteLine(piece + " so " + pieces.ElementAt(piece).GetType() + " is selected and pieceCount is " + pieces.Count);
+        ScreenManager.board.OnClick(new Vector2(pieces.ElementAt(selectPiece).GetAssignedTile().x + 10, pieces.ElementAt(selectPiece).GetAssignedTile().y + 10));
+        Console.WriteLine("Selected " + pieces.ElementAt(selectPiece).GetType() + " at position " + pieces.ElementAt(selectPiece).GetAssignedTile().GetPositionOnBoard());
 
-        int x = pieces.ElementAt(piece).GetAssignedTile().x;
-        int y = pieces.ElementAt(piece).GetAssignedTile().y;
-        ScreenManager.board.OnClick(new Vector2(x, y));
+        
 
-        pieces.ElementAt(piece).GetAssignedTile().SetTexture(Board.tile6);
+        int randomMove = random.Next(0, legalMoves.Count);
+        ScreenManager.board.OnClick(new Vector2(legalMoves.ElementAt(randomMove).x + 10, legalMoves.ElementAt(randomMove).y + 10));
+        Console.WriteLine("randomMove: " + randomMove + " selected tile: " + legalMoves.ElementAt(randomMove).GetPositionOnBoard());
+    }
 
-        int move = random.Next(legalMoves.Count);
-
-        Console.WriteLine("Move is " + move + " while legalMoveCount is " + legalMoves.Count);
-        while(move == 0)
+    private List<Piece> GetPieces()
+    {
+        List<Piece> pieces = new();
+        foreach (Tile tile in ScreenManager.board.GetTiles())
         {
-            move = random.Next(legalMoves.Count);
-            if (legalMoves.Count == 1)
+            if (tile.ContainsPiece() && tile.GetPieceOnTile().GetColor().Equals(this.White))
             {
-                move = 1;
+                pieces.Add(tile.GetPieceOnTile()); ;
             }
         }
-
-        Console.WriteLine(move + " while legalMovesCount: " + legalMoves.Count);
-        x = legalMoves.ElementAt(move).x;
-        y = legalMoves.ElementAt(move).y;
-        ScreenManager.board.OnClick(new Vector2(x, y));
+        return pieces;
     }
 }
