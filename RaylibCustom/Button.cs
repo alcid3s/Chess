@@ -32,7 +32,6 @@ public class Button
         {
             this.State = 0;
         }
-
         this.buttonFilter.y = State * frameHeight;
     }
 

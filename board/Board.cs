@@ -189,8 +189,6 @@ public class Board
             }
         }
 
-        
-
         // Checking if a check has been called for the black king
         if (legalMovesForWhite.Contains(this.blackKingPosition))
         {
@@ -227,6 +225,7 @@ public class Board
         }
     }
 
+    // Checks all the possible moves a side can make
     private List<Tile> UpdateLegalMovesForColor(bool white)
     {
         List<Tile> legalMoves = new();
@@ -260,7 +259,6 @@ public class Board
         }
         return legalMoves;
     }
-
     private void CastleKingSide(Tile tile)
     {
         Tile? east = tile.GetEast(ScreenManager.board);
@@ -276,7 +274,6 @@ public class Board
             }
         }
     }
-
     private void CastleQueenSide(Tile tile)
     {
         Tile west = tile.GetWest(ScreenManager.board);
@@ -375,7 +372,6 @@ public class Board
         legalMovesForWhite = UpdateLegalMovesForColor(true);
         legalMovesForBlack = UpdateLegalMovesForColor(false);
     }
-
     public void Update()
     {
         if (IsMouseButtonPressed(MouseButton.MOUSE_BUTTON_LEFT))
