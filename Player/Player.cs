@@ -14,23 +14,22 @@ public class Player
     {
         List<Piece> pieces = GetPieces(tiles);
 
-        int selectPiece = random.Next(0, pieces.Count);
+        int selectPiece = random.Next() % pieces.Count;
         List<Tile> legalMoves = pieces.ElementAt(selectPiece).CalculateLegalMoves(pieces.ElementAt(selectPiece).GetAssignedTile(), false);
 
         while (!legalMoves.Any() && pieces.ElementAt(selectPiece).PieceIsAlive() || legalMoves.Count == 0 && pieces.ElementAt(selectPiece).PieceIsAlive())
         { 
-            selectPiece = random.Next(0, pieces.Count);
+            selectPiece = random.Next() % pieces.Count;
             legalMoves = pieces.ElementAt(selectPiece).CalculateLegalMoves(pieces.ElementAt(selectPiece).GetAssignedTile(), false);
         }
 
         ScreenManager.board.OnClick(new Vector2(pieces.ElementAt(selectPiece).GetAssignedTile().x + 10, pieces.ElementAt(selectPiece).GetAssignedTile().y + 10));
 
-        int randomMove = random.Next(0, legalMoves.Count);
+        int randomMove = random.Next() % legalMoves.Count;
 
         Console.WriteLine("Player is moving " + pieces.ElementAt(selectPiece).GetType() + " to " + legalMoves.ElementAt(randomMove).GetPositionOnBoard());
         ScreenManager.board.OnClick(new Vector2(legalMoves.ElementAt(randomMove).x + 10, legalMoves.ElementAt(randomMove).y + 10));
     }
-
     private List<Piece> GetPieces(Tile[] tiles)
     {
         List<Piece> pieces = new();
