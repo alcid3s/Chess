@@ -404,7 +404,7 @@ public class Board
         {
             OnClick(GetMousePosition());
         }
-        else if (this.player.White.Equals(this.whiteHasTurn) && this.selectedPiece == null)
+        else if (this.player.White.Equals(this.whiteHasTurn) && this.selectedPiece == null && !mate)
         {
             this.player.GenerateMove(tiles);
         }
