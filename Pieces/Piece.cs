@@ -8,14 +8,26 @@ public abstract class Piece
     protected Tile? assignedTile = null;
 
     private bool hasMoved;
+    private bool isAlive;
     public Piece(bool white)
     {
         this.white = white;
         this.hasMoved = false;
+        this.isAlive = true;
         this.image = LoadImage("../../../res/pieces.png");
     }
 
     public abstract List<Tile> CalculateLegalMoves(Tile startTile, bool ownPawns);
+
+    public bool PieceIsAlive()
+    {
+        return this.isAlive;
+    }
+
+    public void KillPiece()
+    {
+        this.isAlive = false;
+    }
 
     public bool GetColor()
     {

@@ -57,6 +57,7 @@ public class Board
         {
             return;
         }
+
         foreach (Tile tile in tiles)
         {
             bool clicked = tile.OnClick(mousePosition);
@@ -69,9 +70,9 @@ public class Board
             // If nothing is selected yet
             if (clicked && this.selectedPiece == null && tile.ContainsPiece())
             {
-                Console.WriteLine("A");
                 if (tile.ContainsPiece() && tile.GetPieceOnTile().GetColor().Equals(this.whiteHasTurn))
                 {
+                    // Saving the piece in the board class.
                     this.selectedPiece = tile.GetPieceOnTile();
                     this.selectedPiece.setAssignedTile(tile);
                     this.selectedPiece.GetAssignedTile().Assign(this.selectedPiece);
@@ -89,7 +90,6 @@ public class Board
                 && !tile.ContainsPiece() || clicked && this.selectedPiece != null && this.selectedPiece.GetAssignedTile() != null
                 && tile.ContainsPiece() && !tile.GetPieceOnTile().GetColor().Equals(this.selectedPiece.GetColor()))
             {
-                Console.WriteLine("B");
                 List<Tile> legalMoves = this.selectedPiece.CalculateLegalMoves(this.selectedPiece.GetAssignedTile(), false);
 
                 // check if it is allowed to move piece to this tile
@@ -144,7 +144,11 @@ public class Board
                         }
                     }
 
-                    tile.Detach();
+                    if (tile.ContainsPiece() && !tile.GetPieceOnTile().GetColor().Equals(this.selectedPiece.GetColor()))
+                    {
+                        tile.GetPieceOnTile().KillPiece();
+                        tile.Detach();
+                    }
                     tile.Assign(this.selectedPiece);
                     this.selectedPiece.GetAssignedTile().Detach();
                     this.selectedPiece.setAssignedTile(tile);
@@ -158,13 +162,8 @@ public class Board
 
                     legalMovesForWhite = UpdateLegalMovesForColor(true);
                     legalMovesForBlack = UpdateLegalMovesForColor(false);
-                }
-                Console.WriteLine((this.whiteHasTurn ? "White" : "Black") + " turn");
 
-                if (player.White == this.whiteHasTurn && !mate)
-                {
-                    Console.WriteLine("generating move for: " + (player.White ? "White" : "Black"));
-                    player.GenerateMove();
+                    Console.WriteLine((this.whiteHasTurn ? "White's" : "Black's") + " turn");
                 }
             }
 
@@ -266,6 +265,21 @@ public class Board
             }
         }
         return legalMoves;
+    }
+
+    private int ChangeTile(Tile tempTile)
+    {
+        if (tempTile != null)
+        {
+            for (int i = 0; i < tiles.Count(); i++)
+            {
+                if (tiles.ElementAt(i).GetPositionOnBoard().Equals(tempTile.GetPositionOnBoard()))
+                {
+                    return i;
+                }
+            }
+        }
+        return -1;
     }
     private void CastleKingSide(Tile tile)
     {
@@ -381,7 +395,7 @@ public class Board
         this.player = new(this.boardReversed);
         if (this.boardReversed && this.player.White.Equals(this.whiteHasTurn))
         {
-            this.player.GenerateMove();
+            this.player.GenerateMove(this.tiles);
         }
     }
     public void Update()
@@ -389,6 +403,10 @@ public class Board
         if (IsMouseButtonPressed(MouseButton.MOUSE_BUTTON_LEFT))
         {
             OnClick(GetMousePosition());
+        }
+        else if (this.player.White.Equals(this.whiteHasTurn) && this.selectedPiece == null)
+        {
+            this.player.GenerateMove(tiles);
         }
     }
 

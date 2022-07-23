@@ -10,35 +10,33 @@ public class Player
         this.White = white;
     }
 
-    public void GenerateMove()
+    public void GenerateMove(Tile[] tiles)
     {
-        List<Piece> pieces = GetPieces();
+        List<Piece> pieces = GetPieces(tiles);
 
         int selectPiece = random.Next(0, pieces.Count);
         List<Tile> legalMoves = pieces.ElementAt(selectPiece).CalculateLegalMoves(pieces.ElementAt(selectPiece).GetAssignedTile(), false);
 
-        while (!legalMoves.Any() || legalMoves.Count == 0)
+        while (!legalMoves.Any() && pieces.ElementAt(selectPiece).PieceIsAlive() || legalMoves.Count == 0 && pieces.ElementAt(selectPiece).PieceIsAlive())
         { 
             selectPiece = random.Next(0, pieces.Count);
             legalMoves = pieces.ElementAt(selectPiece).CalculateLegalMoves(pieces.ElementAt(selectPiece).GetAssignedTile(), false);
         }
 
         ScreenManager.board.OnClick(new Vector2(pieces.ElementAt(selectPiece).GetAssignedTile().x + 10, pieces.ElementAt(selectPiece).GetAssignedTile().y + 10));
-        Console.WriteLine("Selected " + pieces.ElementAt(selectPiece).GetType() + " at position " + pieces.ElementAt(selectPiece).GetAssignedTile().GetPositionOnBoard());
-
-        
 
         int randomMove = random.Next(0, legalMoves.Count);
+
+        Console.WriteLine("Player is moving " + pieces.ElementAt(selectPiece).GetType() + " to " + legalMoves.ElementAt(randomMove).GetPositionOnBoard());
         ScreenManager.board.OnClick(new Vector2(legalMoves.ElementAt(randomMove).x + 10, legalMoves.ElementAt(randomMove).y + 10));
-        Console.WriteLine("randomMove: " + randomMove + " selected tile: " + legalMoves.ElementAt(randomMove).GetPositionOnBoard());
     }
 
-    private List<Piece> GetPieces()
+    private List<Piece> GetPieces(Tile[] tiles)
     {
         List<Piece> pieces = new();
-        foreach (Tile tile in ScreenManager.board.GetTiles())
+        foreach (Tile tile in tiles)
         {
-            if (tile.ContainsPiece() && tile.GetPieceOnTile().GetColor().Equals(this.White))
+            if (tile.ContainsPiece() && tile.GetPieceOnTile().GetColor().Equals(this.White) && tile.GetPieceOnTile().PieceIsAlive())
             {
                 pieces.Add(tile.GetPieceOnTile()); ;
             }
