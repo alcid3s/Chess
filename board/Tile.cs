@@ -8,7 +8,6 @@ public class Tile
     private Texture2D texture;
     private Vector2 positionOnBoard;
     public int x, y;
-    private int position;
 
     private Piece? pieceOnTile = null;
 
@@ -28,7 +27,6 @@ public class Tile
         DrawTexture(texture, x, y, WHITE);
         if (this.pieceOnTile != null)
         {
-            //Console.WriteLine("Drawing piece: " + this.pieceOnTile.GetType() + " on X: " + x + " and Y: " + y);
             DrawTexture(this.pieceOnTile.GetTexture(), x, y, WHITE);
         }
     }
